@@ -12,10 +12,14 @@ The codebase is structured as a modified MVC (model-view-controller). The main 3
 ### tasks:
 - implement semi-realtime command interface
 - better terrain generation:
-- - more quadrants
-- - generate resources at world start
+  - more quadrants
+  - generate resources at world start
 - implement an inventory
 - create & design enemies 
+- creation of buildings
+  - management of air
+  - farming
+- production & processing of resources, kinda like factorio
 - ...
 
 
