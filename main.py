@@ -1,45 +1,51 @@
-from terrain import Terrain
+from world import World
+import view
 
 # ----------- Globals  ----------- #
 
-terrain = Terrain()
+world = None
 should_exit = False
+commands = None
 
 # ----------- Commands  ----------- #
 
 def cmd_help():
-    print("List of commands: ")
-    print("\t", end="")
-    for cmd_name in commands.keys():
-        print(cmd_name, end=" ")
-    print("\n", end="")
+    view.putln("List of commands: ")
+    view.put("\t")
+    view.putlist(commands.keys(), delim=" ", newline=True)
 
 def cmd_exit():
     global should_exit
     should_exit = True
-    print("Bye!")
+    view.putln("Bye!")
 
 def cmd_yell():
-    print("Nobody hears you, as the moon has very little atmosphere.")
+    view.putln("Nobody hears you, as the moon has very little atmosphere.")
 
 # ----------- Main game loop ----------- #
 
 def start():
-    print("Welcome to moon-survival!")
+    global world, commands
+    world = World()
+    commands = {
+        "help": cmd_help, 
+        "exit": cmd_exit, 
+        "view": world.display_terrain, 
+        "yell": cmd_yell }
+    
+    view.putln("Welcome to moon-survival!")
 
-commands = {"help": cmd_help, "exit": cmd_exit, "view": terrain.display, "yell": cmd_yell}
 def game_loop():
-    print("> ", end="", flush=True)
+    view.put("> ", flush=True)
     cmd = input()
 
     if cmd in commands:
         commands[cmd]()
     else:
-        print("Invalid command, runnning help")
+        view.putln("Invalid command, runnning help")
         commands["help"]()
 
 if __name__ == "__main__":
     start()
-    
     while not should_exit:
         game_loop()
