@@ -1,12 +1,18 @@
 import sys, re, os
 
-_state = {} # TODO: test to double check this state is synchonized.
+import curses
+scr = curses.initscr()
+
+from model.util import mat2dget
 
 def put(txt, end="", flush=False):
     print(txt, end=end, flush=flush)
 
 def putln(txt, flush=False):
     put(txt, end="\n", flush=flush)
+
+def newline():
+    print("\n", end="")
 
 # see: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 # ex: bw -> bright white; k is black; _ means background
@@ -66,15 +72,42 @@ if os.name == "nt":
 def putcln(txt, flush=False):
     putc(txt, end="\n", flush=flush)
 
-def putlist(list, delim=", ", newline=False):
+_CODE_START = "\033["
+_MOVE_CODES = {
+    "start": "A",
+    "up": "F",
+}
+
+def move_cursor(code, times, flush=False):
+    put(_CODE_START + str(times) + _MOVE_CODES[code], flush=flush)
+
+# assuming bottom left starting position #TODO: this
+def putat(ch, offset, flush=False):
+    x, y = offset
+    move_cursor("up", y, flush=False)
+    move_cursor("right", x, flush=False)
+    put(ch, flush=flush)
+    move_cursor("left", x, flush=False)
+    move_cursor("down", y, flush=False)
+
+def putlist(list, delim=", ", newline=False, col=False):
+    myput = putc if col else put
+
     list = iter(list)
-    
-    put(next(list))
+    myput(next(list))
+
     for item in list:
-        put(delim + str(item))
+        myput(delim + str(item))
 
     if newline:
         sys.modules[__name__].newline()
 
-def newline():
-    print("\n", end="")
+def putmat2d(map, size, col=False):
+    myput = putc if col else put # Note: this only reassigns for the local scope
+
+    height, width = size
+    for y in range(0, height):
+        for x in range(0, width):
+            el = mat2dget(map, (x, y), height)
+            myput(el, end=" ")
+        newline()
