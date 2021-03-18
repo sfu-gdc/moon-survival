@@ -10,7 +10,7 @@ commands = None
 # ----------- Commands  ----------- #
 
 def cmd_help():
-    view.putln("List of commands: ")
+    view.putcln("{bm}List of commands: {}")
     view.put("\t")
     view.putlist(commands.keys(), delim=" ", newline=True)
 
@@ -20,7 +20,7 @@ def cmd_exit():
     view.putln("Bye!")
 
 def cmd_yell():
-    view.putln("Nobody hears you, as the moon has very little atmosphere.")
+    view.putcln("{y}Nobody hears you, as the moon has very little atmosphere.{}")
 
 # ----------- Main game loop ----------- #
 
@@ -33,7 +33,7 @@ def start():
         "view": world.display_terrain, 
         "yell": cmd_yell }
     
-    view.putln("Welcome to moon-survival!")
+    view.putcln("{bb}Welcome{} to {bk}moon-survival!{}")
 
 def game_loop():
     view.put("> ", flush=True)
