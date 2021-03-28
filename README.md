@@ -2,7 +2,7 @@
 a text-based game about surviving on the moon
 
 ### info:
-- version: python3.7 -> aim is to make it relatively python3-agnostic.
+- version: python 3.7 or greater
 - structure: the codebase is structured as MVC (model-view-controller). The partitions are: World (model), view, and main (controller). If any information is needed or actions need to be taken, it is best to talk to the world, rather than store object handles everywhere.
 -
 
@@ -23,6 +23,9 @@ a text-based game about surviving on the moon
 - production & processing of resources, kinda like factorio
 - ...
 
-
 ### completed tasks:
+- .
+
+### installation:
+- run `pip3 install -r requirements.txt` or alternately `pip install -r requirements.txt` to install dependencies.
 - 

@@ -1,6 +1,6 @@
+from mytypes import Vector2D, Buffer2D
 from model.terrain import Terrain
 from model.player import Player
-from model.util import mat2dset
 
 import view
 
@@ -15,12 +15,12 @@ class World():
 
     def display_map(self):
         view.putln("Displaying Map: ")
-        area = self.terrain.get_area()
-        width, height = self.terrain.get_size()
-        view.putmat2d(area, (width, height))
-        
-        x, y = self.player.get_position()
-        view.putat((width - x, height - y), self.player.get_icon())
+
+        map = self.terrain.get_map()
+        buf = Buffer2D.from_mat(map)
+
+        buf.set(self.player.position, self.player.icon)
+        buf.put()
 
     def move_player(self, direction):
         self.player.move(direction)

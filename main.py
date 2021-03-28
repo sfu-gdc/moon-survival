@@ -1,7 +1,7 @@
 from functools import partial
 
 from model.world import World
-from model.types import Direction
+from mytypes import Direction
 import view
 
 # ----------- Globals  ----------- #
@@ -10,7 +10,7 @@ world = None
 should_exit = False
 commands = None
 
-_current_scene = None
+current_scene = None
 scenes = None
 
 # ----------- Commands ----------- #

@@ -1,18 +1,11 @@
 import sys, re, os
 
-import curses
-scr = curses.initscr()
+#from mytypes import Vector2D
 
-from model.util import mat2dget
+# ----------- Local Variables ----------- #
 
-def put(txt, end="", flush=False):
-    print(txt, end=end, flush=flush)
-
-def putln(txt, flush=False):
-    put(txt, end="\n", flush=flush)
-
-def newline():
-    print("\n", end="")
+if os.name == "nt":
+    os.system("color")
 
 # see: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 # ex: bw -> bright white; k is black; _ means background
@@ -60,35 +53,25 @@ _VALID_COLOURS = "|".join(_COLOUR_CODES.keys())
 _colour_pattern = r'\{(' + _VALID_COLOURS + r')\}'
 _colour_pattern = re.compile(_colour_pattern)
 
+# ----------- Put functions ----------- #
+
+def put(txt, end="", flush=False):
+    print(txt, end=end, flush=flush)
+
+def putln(txt, flush=False):
+    put(txt, end="\n", flush=flush)
+
+def newline():
+    print("\n", end="")
+
 # put colours like {r}redstuff!{r} -> use \{ to escape.
 def putc(txt, end="", flush=False):
     sub_colour_code = lambda matchobj: _COLOUR_CODES[matchobj.group(0).strip("{}")]
     txt = re.sub(_colour_pattern, sub_colour_code, txt)
     put(txt.replace("\\{", "{").replace("\\}", "}"), end, flush)
 
-if os.name == "nt":
-    os.system("color")
-
 def putcln(txt, flush=False):
     putc(txt, end="\n", flush=flush)
-
-_CODE_START = "\033["
-_MOVE_CODES = {
-    "start": "A",
-    "up": "F",
-}
-
-def move_cursor(code, times, flush=False):
-    put(_CODE_START + str(times) + _MOVE_CODES[code], flush=flush)
-
-# assuming bottom left starting position #TODO: this
-def putat(ch, offset, flush=False):
-    x, y = offset
-    move_cursor("up", y, flush=False)
-    move_cursor("right", x, flush=False)
-    put(ch, flush=flush)
-    move_cursor("left", x, flush=False)
-    move_cursor("down", y, flush=False)
 
 def putlist(list, delim=", ", newline=False, col=False):
     myput = putc if col else put
@@ -101,13 +84,3 @@ def putlist(list, delim=", ", newline=False, col=False):
 
     if newline:
         sys.modules[__name__].newline()
-
-def putmat2d(map, size, col=False):
-    myput = putc if col else put # Note: this only reassigns for the local scope
-
-    height, width = size
-    for y in range(0, height):
-        for x in range(0, width):
-            el = mat2dget(map, (x, y), height)
-            myput(el, end=" ")
-        newline()
