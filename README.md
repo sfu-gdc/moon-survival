@@ -28,4 +28,6 @@ a text-based game about surviving on the moon
 
 ### installation:
 - run `pip3 install -r requirements.txt` or alternately `pip install -r requirements.txt` to install dependencies.
+- for people running on linux, you may need to do `sudo apt-get install -y python3-dev libasound2-dev`
+- Note: wsl doesn't natively support audio
 - 
