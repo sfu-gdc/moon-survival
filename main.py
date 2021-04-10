@@ -50,6 +50,8 @@ def start():
         "help": cmd_help, 
         "exit": cmd_exit, 
         "view": world.display_map, 
+        "scan": world.display_scanned_map, 
+        "stats": world.player.display_stats, 
         "move south": partial(world.move_player, Direction.South), 
         "move east": partial(world.move_player, Direction.East), 
         "yell": cmd_yell }

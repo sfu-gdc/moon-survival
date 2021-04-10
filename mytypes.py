@@ -1,7 +1,4 @@
 from enum import Enum
-#from re import error
-
-import view
 
 class Direction(Enum):
     North = 1
@@ -9,6 +6,35 @@ class Direction(Enum):
     South = 3
     West = 4
 
+class TileMaterial():
+    MoonRock = 1
+    MoonDust = 2
+    LunarOil = 3
+    GeothermalVent = 4
+    MoonMetal = 5
+    Copper = 6
+    Gold = 7
+
+    Map = {
+        MoonRock: "none",
+        MoonDust: "_w",
+        LunarOil: "_bk",
+        GeothermalVent: "_r",
+        MoonMetal: "_bb",
+        Copper: "_c",
+        Gold: "_y",
+    }
+
+class TileDetail():
+    Ground = 0
+    Rock = 1
+    Void = 2
+
+    Map = {
+        Ground: '.',
+        Rock: '&',
+        Void: 'V'
+    }
 
 class Vector2D():
     def __init__(self, x, y):
@@ -21,9 +47,11 @@ class Vector2D():
     def __getitem__(self, key):
         return self.x if key == 0 else self.y
 
+    def __iter__(self):
+        return iter([self.x, self.y])
+
     def __repr__(self):
         return "x, y: " + str(self.x) + ", " + str(self.y)
-
 
 class Matrix2D():
     def from_list(size, list):
@@ -36,9 +64,9 @@ class Matrix2D():
         m.fill(mat.contents.copy())
         return m
     
-    def __init__(self, size, default):
+    def __init__(self, size, default_el):
         self.size = size
-        self.contents = [default for _ in range(size.x * size.y)]
+        self.contents = [default_el for _ in range(size.x * size.y)]
 
     # takes list as its own
     def fill(self, list):
@@ -54,19 +82,29 @@ class Matrix2D():
     def get(self, loc):
         return self.contents[loc.x + loc.y * self.size.x]
 
-    def put(self):
-        for y in range(self.size.y):
-            for x in range(self.size.x):
-                loc = Vector2D(x, y)
-                view.put(self.get(loc))
-            view.newline()
+    # if index is invalid, returns default.
+    def get_else(self, loc, default):
+        index = loc.x + loc.y * self.size.x
+        if index >= 0 and index < self.size.x * self.size.y:
+            return self.contents[loc.x + loc.y * self.size.x]
+        else:
+            return default
 
+    def __str__(self):
+        out = ""
+        for y in reversed(range(self.size.y)):
+            for x in range(self.size.x):
+                out += self.get(Vector2D(x, y))
+            out += "\n"
+        return out
+
+'''
     def putc(self):
-        for y in range(self.size.y):
+        for y in reversed(range(self.size.y)):
             for x in range(self.size.x):
                 view.putc(self.contents[x + y * self.size.x])
             view.newline()
-
+'''
 
 class Buffer2D(Matrix2D):
     ''' 

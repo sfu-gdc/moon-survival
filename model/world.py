@@ -1,4 +1,4 @@
-from mytypes import Vector2D, Buffer2D
+from mytypes import Vector2D
 from model.terrain import Terrain
 from model.player import Player
 
@@ -7,7 +7,14 @@ import view
 class World():
     def __init__(self):
         self.terrain = Terrain()
-        self.player = Player()
+        self.player = Player(self)
+
+    # --------------------------------------------------- #
+
+    def get_map_size(self):
+        return self.terrain.SIZE
+
+    # --------------------------------------------------- #
 
     def display_terrain(self):
         view.putln("Displaying Scanned Terrain Data: ")
@@ -16,11 +23,20 @@ class World():
     def display_map(self):
         view.putln("Displaying Map: ")
 
-        map = self.terrain.get_map()
-        buf = Buffer2D.from_mat(map)
+        map_buf = self.terrain.get_area(self.player.position, view.Size)
 
-        buf.set(self.player.position, self.player.icon)
-        buf.put()
+        center = Vector2D(view.Size.x // 2, view.Size.y // 2)
+        map_buf.set(center, self.player.icon)
+        view.put(map_buf)
+
+    def display_scanned_map(self):
+        view.putln("Displaying Scanned Map: ")
+
+        map_buf = self.terrain.get_area_color(self.player.position, view.Size)
+
+        center = Vector2D(view.Size.x // 2, view.Size.y // 2)
+        map_buf.set(center, self.player.icon)
+        view.put(map_buf)
 
     def move_player(self, direction):
         self.player.move(direction)

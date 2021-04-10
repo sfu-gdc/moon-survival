@@ -1,15 +1,12 @@
 import sys, re, os
 
-#from mytypes import Vector2D
+from mytypes import Vector2D
 
-# ----------- Local Variables ----------- #
-
-if os.name == "nt":
-    os.system("color")
+# ----------- Global Variables ----------- #
 
 # see: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 # ex: bw -> bright white; k is black; _ means background
-_COLOUR_CODES = {
+COLOUR_CODES = {
     "k" : "\033[30m",
     "r" : "\033[31m",
     "g" : "\033[32m",
@@ -47,13 +44,32 @@ _COLOUR_CODES = {
     "bold" : "\033[1m",
     "rev" : "\033[7m",
     "" : "\033[0m", # end colour -> } is returned cause it can't point to ""
+
+    "none" : "" # helps with logic
 }
 
-_VALID_COLOURS = "|".join(_COLOUR_CODES.keys())
+EndColour = COLOUR_CODES[""]
+
+Size = Vector2D(20, 10)
+
+# ----------- Local Variables ----------- #
+
+if os.name == "nt":
+    os.system("color")
+
+_VALID_COLOURS = "|".join(COLOUR_CODES.keys())
 _colour_pattern = r'\{(' + _VALID_COLOURS + r')\}'
 _colour_pattern = re.compile(_colour_pattern)
 
+# ----------- Colour functions ----------- #
+
+def color(str, color):
+    return COLOUR_CODES[color] + str + EndColour
+
 # ----------- Put functions ----------- #
+
+# TODO: making all these functions was kinda a poor idea since it's just different names
+# for print. TODO: stop using these after I start using buffers better & more.
 
 def put(txt, end="", flush=False):
     print(txt, end=end, flush=flush)
@@ -66,7 +82,7 @@ def newline():
 
 # put colours like {r}redstuff!{r} -> use \{ to escape.
 def putc(txt, end="", flush=False):
-    sub_colour_code = lambda matchobj: _COLOUR_CODES[matchobj.group(0).strip("{}")]
+    sub_colour_code = lambda matchobj: COLOUR_CODES[matchobj.group(0).strip("{}")]
     txt = re.sub(_colour_pattern, sub_colour_code, txt)
     put(txt.replace("\\{", "{").replace("\\}", "}"), end, flush)
 
