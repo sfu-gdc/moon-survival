@@ -1,2 +1,3 @@
-simpleaudio
-pydub
+#simpleaudio
+#pydub
+curses

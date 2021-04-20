@@ -1,7 +1,13 @@
+import signal
+import sys
 from functools import partial
+
+import curses
+from curses import wrapper
 
 from model.world import World
 from mytypes import Direction
+from scenes import init_scenes, exit_scenes, loop_current_scene, change_scene_to
 import view
 
 # ----------- Globals  ----------- #
@@ -9,9 +15,6 @@ import view
 world = None
 should_exit = False
 commands = None
-
-current_scene = None
-scenes = None
 
 # ----------- Commands ----------- #
 
@@ -28,23 +31,15 @@ def cmd_exit():
 def cmd_yell():
     view.putcln("{y}Nobody hears you, as the moon has very little atmosphere.{}")
 
-# ----------- Scenes ----------- #
-
-def command_scene():
-    view.put("> ", flush=True)
-    cmd = input()
-
-    if cmd in commands:
-        commands[cmd]()
-    else:
-        view.putln("Invalid command, runnning help")
-        commands["help"]()
-
 # ----------- Main game loop ----------- #
 
-def start():
+def start(window):
     global world, commands, scenes, current_scene
 
+    # window & corner-case setup 
+    signal.signal(signal.SIGINT, lambda sig, frame: end(window))
+
+    # game setup
     world = World()
     commands = {
         "help": cmd_help, 
@@ -52,21 +47,39 @@ def start():
         "view": world.display_map, 
         "scan": world.display_scanned_map, 
         "stats": world.player.display_stats, 
-        "move south": partial(world.move_player, Direction.South), 
+        "control mode": lambda: change_scene_to("control_mode"),
+        "move north": partial(world.move_player, Direction.North), 
         "move east": partial(world.move_player, Direction.East), 
+        "move south": partial(world.move_player, Direction.South), 
+        "move west": partial(world.move_player, Direction.West), 
         "yell": cmd_yell }
     
-    # These triplets are: (scene_loop, scene_enter, scene_exit)
-    scenes = {
-        "command_mode": (command_scene, None, None) }
-    current_scene = "command_mode" # should start with "active_mode" or "menu"
-    
-    view.putcln("{bb}Welcome{} to {bk}moon-survival!{}")
+    init_scenes("terminal_mode", window, world) # TODO: should start with "active_mode" or "menu"
 
 def game_loop():
-    scenes[current_scene][0]()
+    loop_current_scene()
+
+def end(window):
+    exit_scenes()
+
+    # revert curses settings
+    curses.nocbreak()
+    window.keypad(False)
+    curses.echo()
+
+    # exit the window
+    curses.endwin()
+
+    view.putln("exiting nicely...")
+    sys.exit(0)
 
 if __name__ == "__main__":
-    start()
-    while not should_exit:
-        game_loop()
+    def main(window):
+        start(window)
+        
+        while not should_exit:
+            game_loop()
+
+        end(window)
+
+    wrapper(main) # helpful for debugging purposes.

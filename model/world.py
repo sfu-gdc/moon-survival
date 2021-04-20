@@ -17,6 +17,7 @@ class World():
     # --------------------------------------------------- #
 
     def display_terrain(self):
+        # TODO: remove this?
         view.putln("Displaying Scanned Terrain Data: ")
         self.terrain.display()
 

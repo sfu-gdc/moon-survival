@@ -28,6 +28,7 @@ a text-based game about surviving on the moon
   - incentive towards placing rooms in specific orientations -> "ethereum field"
 - atmospheric change & effects
 - production & processing of resources, kinda like factorio
+- commands should be unlocked over time
 - ...
 
 ### completed tasks:
